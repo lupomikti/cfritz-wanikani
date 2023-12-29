@@ -1,19 +1,27 @@
 // ==UserScript==
 // @name         WaniKani Kanji Review Vocabulary List
 // @namespace    http://kurifuri.com/
-// @version      1.2.1
+// @version      1.2.2
 // @description  Displays vocabulary words when reviewing kanji on WaniKani.
 // @author       Christopher Fritz
-// @match        https://www.wanikani.com/subjects/review
-// @match        https://www.wanikani.com/subjects/extra_study*
+// @match        https://www.wanikani.com/*
+// @match        https://preview.wanikani.com/*
 // @run-at       document-end
-// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=wanikani.com
 // ==/UserScript==
 
 (function() {
     'use strict';
 
     /* global wkof */
+
+	let script_name = 'WaniKani Kanji Review Vocabulary List';
+    if (!wkof) {
+        if (confirm(script_name+' requires Wanikani Open Framework.\nDo you want to be forwarded to the installation instructions?')) {
+            window.location.href = 'https://community.wanikani.com/t/instructions-installing-wanikani-open-framework/28549';
+        }
+        return;
+    }
 
     wkof.include('ItemData, Menu, Settings');
 	wkof.ready('document,ItemData,Menu,Settings').then(load_settings).then(startup);
@@ -98,6 +106,8 @@
     }
 
     function startup() {
+		if (!["/subjects/review", "/subjects/extra_study"].includes(window.location.pathname)) return;
+		
         install_css();
         install_menu();
         fetch_items();
@@ -264,4 +274,6 @@
             vocabulary_element.innerHTML = "";
         }
     }
+
+	window.addEventListener("turbo:load", startup);
 })();
